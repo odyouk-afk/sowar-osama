@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صور اسامة</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:hover {
+            box-shadow: 0 14px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        #message {
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            min-height: 25px;
+        }
+
+        .success {
+            color: #27ae60;
+        }
+
+        .loading {
+            color: #667eea;
+        }
+
+        .error {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸</h1>
+        <h2 style="color: #333; margin-bottom: 20px;">صور اسامة</h2>
+        <p>اضغط على الزر لالتقاط صورة من الشاشة</p>
+        <button class="btn" onclick="takeScreenshot()">التقط الصورة الآن</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        async function takeScreenshot() {
+            const messageDiv = document.getElementById('message');
+            const button = document.querySelector('.btn');
+            
+            try {
+                button.disabled = true;
+                messageDiv.textContent = 'جاري التقاط الصورة...';
+                messageDiv.className = 'loading';
+
+                const canvas = await html2canvas(document.body, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false
+                });
+
+                // تحويل الصورة إلى Blob
+                canvas.toBlob(function(blob) {
+                    // إنشاء رابط التحميل
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'sowar-osama-' + new Date().getTime() + '.png';
+                    
+                    // محاولة التحميل
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // تنظيف الذاكرة
+                    URL.revokeObjectURL(url);
+
+                    messageDiv.textContent = '✅ تم التقاط الصورة بنجاح!';
+                    messageDiv.className = 'success';
+                    
+                    setTimeout(() => {
+                        messageDiv.textContent = '';
+                        button.disabled = false;
+                    }, 2000);
+                });
+
+            } catch (error) {
+                console.error('خطأ:', error);
+                messageDiv.textContent = '❌ حدث خطأ. حاول مرة أخرى.';
+                messageDiv.className = 'error';
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
